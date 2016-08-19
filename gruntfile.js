@@ -23,7 +23,7 @@ module.exports = function (grunt) {
         NODE_ENV: 'development'
       },
       prod: {
-        NODE_ENV: 'production forever start server.js'
+        NODE_ENV: 'production'
       }
     },
     watch: {
@@ -110,6 +110,14 @@ module.exports = function (grunt) {
           nodeArgs: ['--debug'],
           ext: 'js,html',
           watch: _.union(defaultAssets.server.gruntConfig, defaultAssets.server.views, defaultAssets.server.allJS, defaultAssets.server.config)
+        }
+      }
+    },
+    forever: {
+      server1: {
+        options: {
+          index: 'server.js',
+          logDir: 'logs'
         }
       }
     },
@@ -343,5 +351,5 @@ module.exports = function (grunt) {
   grunt.registerTask('debug', ['env:dev', 'lint', 'mkdir:upload', 'copy:localConfig', 'concurrent:debug']);
 
   // Run the project in production mode
-  grunt.registerTask('prod', ['build', 'env:prod', 'mkdir:upload', 'copy:localConfig', 'concurrent:default']);
+  grunt.registerTask('prod', ['build', 'env:prod', 'mkdir:upload', 'copy:localConfig', 'concurrent:default', 'forever:server1:start']);
 };
