@@ -23,7 +23,7 @@ module.exports = function (grunt) {
         NODE_ENV: 'development'
       },
       prod: {
-        NODE_ENV: 'production'
+        NODE_ENV: 'production forever start server.js'
       }
     },
     watch: {
@@ -322,6 +322,8 @@ module.exports = function (grunt) {
     var options = this.options(this.data);
     wiredep(options);
   });
+
+  grunt.loadNpmTasks('grunt-forever');
 
   // Lint project files and minify them into two production files.
   grunt.registerTask('build', ['env:dev', 'wiredep', 'lint', 'ngAnnotate', 'uglify', 'cssmin']);
