@@ -122,7 +122,7 @@ module.exports = function (grunt) {
       }
     },
     concurrent: {
-      default: ['nodemon', 'watch'],
+      default: ['nodemon', 'watch', 'forever:server1:start'],
       debug: ['nodemon', 'watch', 'node-inspector'],
       options: {
         logConcurrentOutput: true
@@ -331,8 +331,6 @@ module.exports = function (grunt) {
     wiredep(options);
   });
 
-  grunt.loadNpmTasks('grunt-forever');
-
   // Lint project files and minify them into two production files.
   grunt.registerTask('build', ['env:dev', 'wiredep', 'lint', 'ngAnnotate', 'uglify', 'cssmin']);
 
@@ -351,5 +349,5 @@ module.exports = function (grunt) {
   grunt.registerTask('debug', ['env:dev', 'lint', 'mkdir:upload', 'copy:localConfig', 'concurrent:debug']);
 
   // Run the project in production mode
-  grunt.registerTask('prod', ['build', 'env:prod', 'mkdir:upload', 'copy:localConfig', 'concurrent:default', 'forever:server1:start']);
+  grunt.registerTask('prod', ['build', 'env:prod', 'mkdir:upload', 'copy:localConfig', 'concurrent:default']);
 };
