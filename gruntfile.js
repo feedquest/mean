@@ -116,13 +116,13 @@ module.exports = function (grunt) {
     forever: {
       server1: {
         options: {
-          index: 'server.js',
+          index: 'node --force server.js',
           logDir: 'logs'
         }
       }
     },
     concurrent: {
-      default: ['nodemon', 'watch', 'forever:server1:start'],
+      default: ['nodemon', 'watch', 'forever:server1:restart'],
       debug: ['nodemon', 'watch', 'node-inspector'],
       options: {
         logConcurrentOutput: true
