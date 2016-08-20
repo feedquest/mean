@@ -114,7 +114,7 @@ module.exports = function (grunt) {
       }
     },
     forever: {
-      server1: {
+      prod: {
         options: {
           index: 'server.js',
           logDir: 'logs'
@@ -122,7 +122,7 @@ module.exports = function (grunt) {
       }
     },
     concurrent: {
-      default: ['nodemon', 'watch', 'forever:server1:restart'],
+      default: ['nodemon', 'watch', 'forever:prod:restart'],
       debug: ['nodemon', 'watch', 'node-inspector'],
       options: {
         logConcurrentOutput: true
