@@ -263,7 +263,7 @@ module.exports = function (grunt) {
     });
   });
 
-//load forever
+ // load forever
  grunt.loadNpmTasks('grunt-forever');
 
   // Load NPM tasks
