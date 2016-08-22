@@ -122,7 +122,7 @@ module.exports = function (grunt) {
       }
     },
     concurrent: {
-      default: ['nodemon', 'watch', 'forever:production:restart'],
+      default: ['watch', 'forever:production:restart'],
       debug: ['nodemon', 'watch', 'node-inspector'],
       options: {
         logConcurrentOutput: true
