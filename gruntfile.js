@@ -116,7 +116,7 @@ module.exports = function (grunt) {
     forever: {
       production: {
         options: {
-          index: 'server.js',
+          index: '--force server.js',
           logDir: 'logs'
         }
       }
