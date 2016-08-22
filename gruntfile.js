@@ -116,7 +116,7 @@ module.exports = function (grunt) {
     forever: {
       production: {
         options: {
-          index: '--force server.js',
+          index: 'server.js',
           logDir: 'logs'
         }
       }
@@ -262,6 +262,9 @@ module.exports = function (grunt) {
       done();
     });
   });
+
+//load forever
+ grunt.loadNpmTasks('grunt-forever');
 
   // Load NPM tasks
   require('load-grunt-tasks')(grunt);
