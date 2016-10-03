@@ -3,11 +3,11 @@
 
   angular
     .module('articles.admin')
-    .controller('ArticlesController', ArticlesController);
+    .controller('ArticlesAdminController', ArticlesAdminController);
 
-  ArticlesController.$inject = ['$scope', '$state', '$window', 'articleResolve', 'Authentication'];
+  ArticlesAdminController.$inject = ['$scope', '$state', '$window', 'articleResolve', 'Authentication'];
 
-  function ArticlesController($scope, $state, $window, article, Authentication) {
+  function ArticlesAdminController($scope, $state, $window, article, Authentication) {
     var vm = this;
 
     vm.article = article;
@@ -20,7 +20,9 @@
     // Remove existing Article
     function remove() {
       if ($window.confirm('Are you sure you want to delete?')) {
-        vm.article.$remove($state.go('admin.articles.list'));
+        vm.article.$remove(function() {
+          $state.go('admin.articles.list');
+        });
       }
     }
 

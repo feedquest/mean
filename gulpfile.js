@@ -7,6 +7,7 @@ var _ = require('lodash'),
   fs = require('fs'),
   defaultAssets = require('./config/assets/default'),
   testAssets = require('./config/assets/test'),
+  testConfig = require('./config/env/test'),
   glob = require('glob'),
   gulp = require('gulp'),
   gulpLoadPlugins = require('gulp-load-plugins'),
@@ -128,15 +129,12 @@ gulp.task('watch:server:run-tests', function () {
 });
 
 // CSS linting task
-gulp.task('csslint', function (done) {
+gulp.task('csslint', function () {
   return gulp.src(defaultAssets.client.css)
     .pipe(plugins.csslint('.csslintrc'))
-    .pipe(plugins.csslint.reporter())
-    .pipe(plugins.csslint.reporter(function (file) {
-      if (!file.csslint.errorCount) {
-        done();
-      }
-    }));
+    .pipe(plugins.csslint.formatter());
+    // Don't fail CSS issues yet
+    // .pipe(plugins.csslint.failFormatter());
 });
 
 // ESLint JS linting task
@@ -318,14 +316,60 @@ gulp.task('mocha', function (done) {
         });
       });
   });
+});
 
+// Prepare istanbul coverage test
+gulp.task('pre-test', function () {
+
+  // Display coverage for all server JavaScript files
+  return gulp.src(defaultAssets.server.allJS)
+    // Covering files
+    .pipe(plugins.istanbul())
+    // Force `require` to return covered files
+    .pipe(plugins.istanbul.hookRequire());
+});
+
+// Run istanbul test and write report
+gulp.task('mocha:coverage', ['pre-test', 'mocha'], function () {
+  var testSuites = changedTestFiles.length ? changedTestFiles : testAssets.tests.server;
+
+  return gulp.src(testSuites)
+    .pipe(plugins.istanbul.writeReports({
+      reportOpts: { dir: './coverage/server' }
+    }));
 });
 
 // Karma test runner task
 gulp.task('karma', function (done) {
   new KarmaServer({
+    configFile: __dirname + '/karma.conf.js'
+  }, done).start();
+});
+
+// Run karma with coverage options set and write report
+gulp.task('karma:coverage', function(done) {
+  new KarmaServer({
     configFile: __dirname + '/karma.conf.js',
-    singleRun: true
+    preprocessors: {
+      'modules/*/client/views/**/*.html': ['ng-html2js'],
+      'modules/core/client/app/config.js': ['coverage'],
+      'modules/core/client/app/init.js': ['coverage'],
+      'modules/*/client/*.js': ['coverage'],
+      'modules/*/client/config/*.js': ['coverage'],
+      'modules/*/client/controllers/*.js': ['coverage'],
+      'modules/*/client/directives/*.js': ['coverage'],
+      'modules/*/client/services/*.js': ['coverage']
+    },
+    reporters: ['progress', 'coverage'],
+    coverageReporter: {
+      dir: 'coverage/client',
+      reporters: [
+        { type: 'lcov', subdir: '.' }
+        // printing summary to console currently weirdly causes gulp to hang so disabled for now
+        // https://github.com/karma-runner/karma-coverage/issues/209
+        // { type: 'text-summary' }
+      ]
+    }
   }, done).start();
 });
 
@@ -402,6 +446,10 @@ gulp.task('test:client', function (done) {
 
 gulp.task('test:e2e', function (done) {
   runSequence('env:test', 'lint', 'dropdb', 'nodemon', 'protractor', done);
+});
+
+gulp.task('test:coverage', function (done) {
+  runSequence('env:test', ['copyLocalEnvConfig', 'makeUploadsDir', 'dropdb'], 'lint', 'mocha:coverage', 'karma:coverage', done);
 });
 
 // Run the project in development mode
