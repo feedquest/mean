@@ -113,16 +113,8 @@ module.exports = function (grunt) {
         }
       }
     },
-    forever: {
-      production: {
-        options: {
-          index: 'server.js',
-          logDir: 'logs'
-        }
-      }
-    },
     concurrent: {
-      default: ['forever:production:restart', 'watch'],
+      default: ['nodemon', 'watch'],
       debug: ['nodemon', 'watch', 'node-inspector'],
       options: {
         logConcurrentOutput: true
@@ -262,9 +254,6 @@ module.exports = function (grunt) {
       done();
     });
   });
-
-  // load forever
-  grunt.loadNpmTasks('grunt-forever');
 
   // Load NPM tasks
   require('load-grunt-tasks')(grunt);
